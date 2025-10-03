@@ -16,8 +16,13 @@ class ReportsTabContent extends StatefulWidget {
 }
 
 class _ReportsTabContentState extends State<ReportsTabContent> {
-  Course? _selectedCourse;
+  int? _selectedCourseKey;
   String? _generatingSessionId;
+
+  Course? _getSelectedCourse(CourseProvider courseProvider) {
+    if (_selectedCourseKey == null) return null;
+    return courseProvider.getCourseByKey(_selectedCourseKey!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +34,9 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
         attendanceProvider,
         child,
       ) {
+        // Debug: Check if courses are loaded
+        print('Reports Tab - Courses count: ${courseProvider.courses.length}');
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -60,13 +68,13 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
               // Course Selection
               _buildCourseDropdown(courseProvider, attendanceProvider),
 
-              if (_selectedCourse != null) ...[
+              if (_selectedCourseKey != null) ...[
                 const SizedBox(height: 24),
                 // Section 1: Course Overview & Statistics
                 _buildStatistics(courseProvider, attendanceProvider),
                 const SizedBox(height: 24),
                 // Section 2: Course Sections & Details
-                _buildCourseSections(),
+                _buildCourseSections(courseProvider),
                 const SizedBox(height: 24),
                 // Section 3: Recent Attendance Sessions
                 _buildRecentSessions(
@@ -170,8 +178,9 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
-              child: DropdownButtonFormField<Course>(
-                value: _selectedCourse,
+              child: DropdownButtonFormField<int>(
+                value: _selectedCourseKey,
+                isExpanded: true,
                 decoration: InputDecoration(
                   hintText: 'Choose a course',
                   border: OutlineInputBorder(
@@ -187,25 +196,23 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
                 ),
                 items:
                     courseProvider.courses.map((course) {
+                      final courseKey = courseProvider.getCourseKey(course);
                       final sectionText =
                           course.section.isNotEmpty
-                              ? ' - Sec ${course.section}'
+                              ? ' (Sec ${course.section})'
                               : '';
                       return DropdownMenuItem(
-                        value: course,
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: Text(
-                            '${course.code} - ${course.name}$sectionText',
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 14),
-                          ),
+                        value: courseKey,
+                        child: Text(
+                          '${course.code} - ${course.name}$sectionText',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 14),
                         ),
                       );
                     }).toList(),
-                onChanged: (course) {
+                onChanged: (courseKey) {
                   setState(() {
-                    _selectedCourse = course;
+                    _selectedCourseKey = courseKey;
                   });
                 },
               ),
@@ -265,14 +272,14 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
             const SizedBox(height: 20),
             Consumer<AttendanceProvider>(
               builder: (context, provider, child) {
-                final courseKey = courseProvider.getCourseKey(_selectedCourse!);
-                final stats =
-                    courseKey != null
-                        ? provider.getAttendanceStats(
-                          courseKey,
-                          _selectedCourse!.studentIds,
-                        )
-                        : {'attendance_percentage': 0.0, 'total_classes': 0.0};
+                final selectedCourse = _getSelectedCourse(courseProvider);
+                if (selectedCourse == null) return const SizedBox.shrink();
+
+                final courseKey = _selectedCourseKey!;
+                final stats = provider.getAttendanceStats(
+                  courseKey,
+                  selectedCourse.studentIds,
+                );
 
                 final attendancePercentage =
                     stats['attendance_percentage'] ?? 0.0;
@@ -289,7 +296,7 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
                               Expanded(
                                 child: _buildStatCard(
                                   'Students',
-                                  '${_selectedCourse!.studentIds.length}',
+                                  '${selectedCourse.studentIds.length}',
                                   const Color(0xFF3B82F6),
                                 ),
                               ),
@@ -320,7 +327,7 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
                           Expanded(
                             child: _buildStatCard(
                               'Total Students',
-                              '${_selectedCourse!.studentIds.length}',
+                              '${selectedCourse.studentIds.length}',
                               const Color(0xFF3B82F6),
                             ),
                           ),
@@ -452,11 +459,14 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
         const SizedBox(height: 16),
         Consumer<AttendanceProvider>(
           builder: (context, provider, child) {
-            final courseKey = courseProvider.getCourseKey(_selectedCourse!);
-            final records =
-                courseKey != null
-                    ? provider.getAttendanceForCourse(courseKey)
-                    : <AttendanceRecord>[];
+            final selectedCourse = _getSelectedCourse(courseProvider);
+            if (selectedCourse == null || _selectedCourseKey == null) {
+              return const SizedBox.shrink();
+            }
+
+            final records = provider.getAttendanceForCourse(
+              _selectedCourseKey!,
+            );
 
             if (records.isEmpty) {
               return Container(
@@ -685,7 +695,10 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
     );
   }
 
-  Widget _buildCourseSections() {
+  Widget _buildCourseSections(CourseProvider courseProvider) {
+    final selectedCourse = _getSelectedCourse(courseProvider);
+    if (selectedCourse == null) return const SizedBox.shrink();
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -753,15 +766,15 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  _buildDetailRow('Course Code:', _selectedCourse!.code),
-                  _buildDetailRow('Course Name:', _selectedCourse!.name),
-                  _buildDetailRow('Instructor:', _selectedCourse!.instructor),
-                  _buildDetailRow('Department:', _selectedCourse!.department),
-                  _buildDetailRow('Semester:', _selectedCourse!.semester),
-                  _buildDetailRow('Section:', _selectedCourse!.section),
+                  _buildDetailRow('Course Code:', selectedCourse.code),
+                  _buildDetailRow('Course Name:', selectedCourse.name),
+                  _buildDetailRow('Instructor:', selectedCourse.instructor),
+                  _buildDetailRow('Department:', selectedCourse.department),
+                  _buildDetailRow('Semester:', selectedCourse.semester),
+                  _buildDetailRow('Section:', selectedCourse.section),
                   _buildDetailRow(
                     'Enrolled Students:',
-                    '${_selectedCourse!.studentIds.length}',
+                    '${selectedCourse.studentIds.length}',
                   ),
                 ],
               ),
@@ -816,11 +829,15 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
     });
 
     try {
+      // Get the selected course
+      final selectedCourse = _getSelectedCourse(courseProvider);
+      if (selectedCourse == null) return;
+
       // Get students for this course
       final courseStudents =
           studentProvider.students
               .where(
-                (student) => _selectedCourse!.studentIds.contains(
+                (student) => selectedCourse.studentIds.contains(
                   studentProvider.getStudentKey(student),
                 ),
               )
@@ -828,7 +845,7 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
 
       // Generate PDF for this specific session
       await PdfService.generateAttendanceReport(
-        _selectedCourse!,
+        selectedCourse,
         courseStudents,
         [record], // Only this specific record
       );

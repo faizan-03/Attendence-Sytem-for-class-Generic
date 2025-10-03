@@ -612,8 +612,12 @@ class _StudentListScreenState extends State<StudentListScreen> {
                                                 color: Colors.white,
                                               ),
                                               const SizedBox(width: 8),
-                                              Text(
-                                                '${student.name} removed from course',
+                                              Expanded(
+                                                child: Text(
+                                                  '${student.name} removed from course',
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
                                               ),
                                             ],
                                           ),

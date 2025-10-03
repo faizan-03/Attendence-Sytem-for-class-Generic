@@ -578,6 +578,7 @@ class CourseCard extends StatelessWidget {
                   children: [
                     // Instructor Info
                     Expanded(
+                      flex: 3,
                       child: Row(
                         children: [
                           Container(
@@ -601,7 +602,7 @@ class CourseCard extends StatelessWidget {
                                   'Instructor',
                                   style: TextStyle(
                                     color: Colors.grey.shade500,
-                                    fontSize: 12,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -610,9 +611,10 @@ class CourseCard extends StatelessWidget {
                                   course.instructor,
                                   style: const TextStyle(
                                     color: Color(0xFF374151),
-                                    fontSize: 14,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.w600,
                                   ),
+                                  maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -621,109 +623,48 @@ class CourseCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
 
                     // Students Count
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            Icons.group_rounded,
-                            size: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Students',
-                              style: TextStyle(
-                                color: Colors.grey.shade500,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${course.studentIds.length}',
-                              style: const TextStyle(
-                                color: Color(0xFF374151),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Status Badge
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors:
-                              course.studentIds.isNotEmpty
-                                  ? [
-                                    Colors.green.shade50,
-                                    Colors.green.shade100,
-                                  ]
-                                  : [
-                                    Colors.orange.shade50,
-                                    Colors.orange.shade100,
-                                  ],
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color:
-                              course.studentIds.isNotEmpty
-                                  ? Colors.green.shade200
-                                  : Colors.orange.shade200,
-                          width: 1,
-                        ),
-                      ),
+                    Flexible(
+                      flex: 2,
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            width: 6,
-                            height: 6,
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color:
-                                  course.studentIds.isNotEmpty
-                                      ? Colors.green.shade500
-                                      : Colors.orange.shade500,
-                              shape: BoxShape.circle,
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.group_rounded,
+                              size: 16,
+                              color: Colors.grey.shade600,
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            course.studentIds.isNotEmpty
-                                ? 'Active'
-                                : 'No Students',
-                            style: TextStyle(
-                              color:
-                                  course.studentIds.isNotEmpty
-                                      ? Colors.green.shade700
-                                      : Colors.orange.shade700,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Students',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${course.studentIds.length}',
+                                  style: const TextStyle(
+                                    color: Color(0xFF374151),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

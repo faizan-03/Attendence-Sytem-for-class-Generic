@@ -15,16 +15,27 @@ class AttendanceTabContent extends StatefulWidget {
 }
 
 class _AttendanceTabContentState extends State<AttendanceTabContent> {
-  Course? _selectedCourse;
+  int? _selectedCourseKey;
   DateTime _selectedDate = DateTime.now();
   String _selectedClassType = 'Regular';
 
   final List<String> _classTypes = ['Regular', 'Lab', 'Makeup'];
 
+  // Helper method to get the selected course from its key
+  Course? _getSelectedCourse(CourseProvider courseProvider) {
+    if (_selectedCourseKey == null) return null;
+    return courseProvider.getCourseByKey(_selectedCourseKey!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<CourseProvider, AttendanceProvider>(
       builder: (context, courseProvider, attendanceProvider, child) {
+        // Debug: Check if courses are loaded
+        print(
+          'Attendance Tab - Courses count: ${courseProvider.courses.length}',
+        );
+
         return Column(
           children: [
             Expanded(
@@ -50,10 +61,17 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                     const SizedBox(height: 24),
 
                     // Course Selection Card
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -62,12 +80,21 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                           children: [
                             Row(
                               children: [
-                                Icon(
-                                  Icons.school,
-                                  color: Colors.grey[600],
-                                  size: 20,
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFF6366F1,
+                                    ).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.school,
+                                    color: Color(0xFF6366F1),
+                                    size: 16,
+                                  ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 12),
                                 const Text(
                                   'Select Course',
                                   style: TextStyle(
@@ -114,30 +141,24 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                               )
                             else
                               // Course dropdown
-                              DropdownButtonFormField<Course>(
-                                value: _selectedCourse,
+                              DropdownButtonFormField<int>(
+                                value: _selectedCourseKey,
+                                isExpanded: true,
                                 decoration: InputDecoration(
                                   hintText: 'Choose a course to get started',
                                   filled: true,
                                   fillColor: Colors.grey[50],
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey[300]!,
-                                    ),
+                                    borderSide: BorderSide.none,
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey[300]!,
-                                    ),
+                                    borderSide: BorderSide.none,
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFF6366F1),
-                                      width: 2,
-                                    ),
+                                    borderSide: BorderSide.none,
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -146,27 +167,24 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                                 ),
                                 items:
                                     courseProvider.courses.map((course) {
+                                      final courseKey = courseProvider
+                                          .getCourseKey(course);
                                       return DropdownMenuItem(
-                                        value: course,
-                                        child: SizedBox(
-                                          width: double.infinity,
-                                          child: Text(
-                                            '${course.code} - ${course.name}${course.section.isNotEmpty ? ' (Sec ${course.section})' : ''}',
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                        value: courseKey,
+                                        child: Text(
+                                          '${course.code} - ${course.name}${course.section.isNotEmpty ? ' (Sec ${course.section})' : ''}',
+                                          style: const TextStyle(fontSize: 14),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       );
                                     }).toList(),
-                                onChanged: (course) {
+                                onChanged: (courseKey) {
                                   setState(() {
-                                    _selectedCourse = course;
+                                    _selectedCourseKey = courseKey;
                                   });
-                                  if (course != null) {
+                                  if (courseKey != null) {
                                     attendanceProvider.setSelectedCourseId(
-                                      courseProvider.getCourseKey(course) ?? 0,
+                                      courseKey,
                                     );
                                   }
                                 },
@@ -176,17 +194,24 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                       ),
                     ),
 
-                    if (_selectedCourse != null) ...[
+                    if (_selectedCourseKey != null) ...[
                       const SizedBox(height: 20),
 
                       // Date and Class Type Selection
                       Row(
                         children: [
                           Expanded(
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                               child: InkWell(
                                 onTap: () async {
@@ -207,7 +232,7 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                                     );
                                   }
                                 },
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(16),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Column(
@@ -216,10 +241,20 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                                     children: [
                                       Row(
                                         children: [
-                                          Icon(
-                                            Icons.calendar_today,
-                                            color: Colors.grey[600],
-                                            size: 16,
+                                          Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: const Color(
+                                                0xFF6366F1,
+                                              ).withValues(alpha: 0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: const Icon(
+                                              Icons.calendar_today,
+                                              color: Color(0xFF6366F1),
+                                              size: 14,
+                                            ),
                                           ),
                                           const SizedBox(width: 8),
                                           const Text(
@@ -251,61 +286,132 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.class_,
-                                          color: Colors.grey[600],
-                                          size: 16,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    // Show bottom sheet or dialog to select class type
+                                    showModalBottomSheet(
+                                      context: context,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(20),
                                         ),
-                                        const SizedBox(width: 8),
-                                        const Text(
-                                          'Class Type',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.grey,
+                                      ),
+                                      builder:
+                                          (context) => Container(
+                                            padding: const EdgeInsets.all(20),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  'Select Class Type',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 20),
+                                                ..._classTypes.map((type) {
+                                                  return ListTile(
+                                                    leading: Icon(
+                                                      Icons.class_,
+                                                      color:
+                                                          _selectedClassType ==
+                                                                  type
+                                                              ? const Color(
+                                                                0xFF6366F1,
+                                                              )
+                                                              : Colors.grey,
+                                                    ),
+                                                    title: Text(type),
+                                                    trailing:
+                                                        _selectedClassType ==
+                                                                type
+                                                            ? const Icon(
+                                                              Icons
+                                                                  .check_circle,
+                                                              color: Color(
+                                                                0xFF6366F1,
+                                                              ),
+                                                            )
+                                                            : null,
+                                                    onTap: () {
+                                                      setState(() {
+                                                        _selectedClassType =
+                                                            type;
+                                                      });
+                                                      Navigator.pop(context);
+                                                    },
+                                                  );
+                                                }).toList(),
+                                              ],
+                                            ),
+                                          ),
+                                    );
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: const Color(
+                                                  0xFF6366F1,
+                                                ).withValues(alpha: 0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: const Icon(
+                                                Icons.class_,
+                                                color: Color(0xFF6366F1),
+                                                size: 14,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Text(
+                                              'Class Type',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          _selectedClassType,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black87,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        value: _selectedClassType,
-                                        isExpanded: true,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
-                                        ),
-                                        items:
-                                            _classTypes.map((type) {
-                                              return DropdownMenuItem(
-                                                value: type,
-                                                child: Text(type),
-                                              );
-                                            }).toList(),
-                                        onChanged: (type) {
-                                          if (type != null) {
-                                            setState(() {
-                                              _selectedClassType = type;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -337,12 +443,17 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
+                            final selectedCourse = _getSelectedCourse(
+                              courseProvider,
+                            );
+                            if (selectedCourse == null) return;
+
                             // Navigate to attendance screen
                             Navigator.pushNamed(
                               context,
                               '/mark-attendance',
                               arguments: {
-                                'course': _selectedCourse,
+                                'course': selectedCourse,
                                 'date': DateFormat(
                                   'yyyy-MM-dd',
                                 ).format(_selectedDate),
@@ -479,7 +590,8 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
     AttendanceProvider attendanceProvider,
     CourseProvider courseProvider,
   ) {
-    if (_selectedCourse == null) {
+    final selectedCourse = _getSelectedCourse(courseProvider);
+    if (selectedCourse == null) {
       return Container(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -500,8 +612,7 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
     }
 
     // Get course key for the selected course
-    final courseKey = courseProvider.getCourseKey(_selectedCourse!);
-    if (courseKey == null) return const SizedBox.shrink();
+    final courseKey = _selectedCourseKey!;
 
     // Get recent attendance records for this course
     final courseAttendance = attendanceProvider.getAttendanceForCourse(
@@ -568,24 +679,18 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
 
         return Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.white, Colors.grey.shade50],
-            ),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                spreadRadius: 0,
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
             ],
-            border: Border.all(color: Colors.grey.shade200, width: 1),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Row(
               children: [
                 // Left side - Attendance Percentage
@@ -629,7 +734,7 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                                 : attendancePercentage >= 60
                                 ? const Color(0xFFF59E0B)
                                 : const Color(0xFFFF6B6B))
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.25),
                         spreadRadius: 0,
                         blurRadius: 8,
                         offset: const Offset(0, 2),
@@ -660,8 +765,8 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                                         shape: BoxShape.circle,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(
-                                              0.2,
+                                            color: Colors.black.withValues(
+                                              alpha: 0.2,
                                             ),
                                             spreadRadius: 0,
                                             blurRadius: 2,
@@ -698,79 +803,31 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                     children: [
                       Text(
                         DateFormat(
-                          'EEEE, MMM d, yyyy',
+                          'EEEE, MMMM d, yyyy',
                         ).format(DateTime.parse(record.date)),
                         style: const TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF6366F1).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              record.effectiveClassType,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF6366F1),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              '$presentStudents/$totalStudents students',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Present: $presentStudents/$totalStudents students',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      ),
+                      Text(
+                        'Class Type: ${record.effectiveClassType}',
+                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(width: 12),
-
                 // Right side - Edit Button
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF4F46E5), // More refined indigo
-                        Color(0xFF7C3AED), // Purple accent
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF4F46E5).withOpacity(0.3),
-                        spreadRadius: 0,
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+                SizedBox(
+                  width: 48,
+                  height: 48,
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -779,7 +836,7 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                             .pushNamed(
                               EditAttendanceScreen.routeName,
                               arguments: {
-                                'course': _selectedCourse,
+                                'course': selectedCourse,
                                 'date': record.date,
                                 'attendance': record,
                                 'classType': record.effectiveClassType,
@@ -789,38 +846,22 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                               setState(() {});
                             });
                       },
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
+                          ),
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                              child: const Icon(
-                                Icons.edit_rounded,
-                                size: 12,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            const Text(
-                              'Edit',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
+                        child: const Center(
+                          child: Icon(
+                            Icons.edit_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
