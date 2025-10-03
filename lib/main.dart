@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Models
 import 'models/course.dart';
@@ -23,6 +24,9 @@ import 'screens/students/edit_student_screen.dart';
 import 'screens/attendence/mark_attendance_screen.dart';
 import 'screens/attendence/edit_attendance_screen.dart';
 import 'screens/attendence/attendance_list_screen.dart';
+
+// Widgets
+import 'widgets/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,10 +105,10 @@ class MyApp extends StatelessWidget {
               borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
             ),
             filled: true,
-            fillColor: Color(0xFFF8FAFC),
+            fillColor: const Color(0xFFF8FAFC),
           ),
         ),
-        home: const CourseListScreen(),
+        home: const AppInitializer(),
         routes: {
           AddCourseScreen.routeName: (_) => const AddCourseScreen(),
           EditCourseScreen.routeName: (_) => const EditCourseScreen(),
@@ -118,5 +122,56 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class AppInitializer extends StatefulWidget {
+  const AppInitializer({super.key});
+
+  @override
+  State<AppInitializer> createState() => _AppInitializerState();
+}
+
+class _AppInitializerState extends State<AppInitializer> {
+  bool _isLoading = true;
+  bool _showOnboarding = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstLaunch();
+  }
+
+  Future<void> _checkFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+
+    setState(() {
+      _showOnboarding = !onboardingCompleted;
+      _isLoading = false;
+    });
+  }
+
+  void _completeOnboarding() {
+    setState(() {
+      _showOnboarding = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF6366F1)),
+        ),
+      );
+    }
+
+    if (_showOnboarding) {
+      return OnboardingScreen(onComplete: _completeOnboarding);
+    }
+
+    return const CourseListScreen();
   }
 }

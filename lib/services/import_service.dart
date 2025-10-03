@@ -357,14 +357,9 @@ Bob Johnson,CS-003''';
   static String getFormatInstructions() {
     return '''File Format Requirements:
 
-CSV Format:
-- First column: Student Name (required)
-- Second column: Roll Number (required)
-- Additional columns: Email, Phone (optional)
-
-Excel Format:
-- Same as CSV but in Excel file (.xlsx or .xls)
-- Use the first sheet
+CSV/Excel Format:
+• First column: Student Name (required)
+• Second column: Roll Number (required)
 
 Example:
 Name,Roll Number
@@ -372,10 +367,10 @@ John Doe,CS-001
 Jane Smith,CS-002
 
 Notes:
-- Header row is optional but recommended
-- Empty rows will be skipped
-- Each student must have both Name and Roll Number
-- Roll numbers should be unique
-- Invalid rows will be reported but won't stop the import''';
+• Header row is optional but recommended
+• Empty rows will be skipped
+• Each student must have both Name and Roll Number
+• Roll numbers should be unique
+• Invalid rows will be reported but won't stop the import''';
   }
 }

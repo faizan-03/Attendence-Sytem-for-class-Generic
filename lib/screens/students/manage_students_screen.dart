@@ -163,43 +163,186 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
-            title: const Text('File Format Instructions'),
-            content: SingleChildScrollView(
+          (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Container(
+              constraints: const BoxConstraints(
+                maxWidth: 500,
+                maxHeight: 700, // Limit height to prevent overflow
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(ImportService.getFormatInstructions()),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Sample CSV content:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
+                  // Header
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      ),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
+                      ),
                     ),
-                    child: Text(
-                      ImportService.generateSampleCSV(),
-                      style: const TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 12,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.info_outline_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        const Expanded(
+                          child: Text(
+                            'File Format Guide',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Content - Flexible with scrolling
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Instructions
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF6366F1,
+                              ).withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFF6366F1,
+                                ).withValues(alpha: 0.2),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.lightbulb_outline_rounded,
+                                      color: const Color(0xFF6366F1),
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Instructions',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Color(0xFF6366F1),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  ImportService.getFormatInstructions(),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade700,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Sample CSV
+                          const Row(
+                            children: [
+                              Icon(
+                                Icons.description_outlined,
+                                color: Color(0xFF6366F1),
+                                size: 18,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Sample CSV Format',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Text(
+                              ImportService.generateSampleCSV(),
+                              style: const TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Footer
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Got it!',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Got it'),
-              ),
-            ],
           ),
     );
   }
@@ -422,10 +565,25 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
                                     height: 48,
                                     width: 48,
                                     decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey.shade300,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          const Color(
+                                            0xFF6366F1,
+                                          ).withValues(alpha: 0.1),
+                                          const Color(
+                                            0xFF8B5CF6,
+                                          ).withValues(alpha: 0.05),
+                                        ],
                                       ),
                                       borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: const Color(
+                                          0xFF6366F1,
+                                        ).withValues(alpha: 0.2),
+                                        width: 1.5,
+                                      ),
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
@@ -433,9 +591,9 @@ class _ManageStudentsScreenState extends State<ManageStudentsScreen> {
                                         onTap: _showFormatInstructions,
                                         borderRadius: BorderRadius.circular(12),
                                         child: const Icon(
-                                          Icons.help_outline,
-                                          color: Colors.grey,
-                                          size: 20,
+                                          Icons.info_outline_rounded,
+                                          color: Color(0xFF6366F1),
+                                          size: 22,
                                         ),
                                       ),
                                     ),

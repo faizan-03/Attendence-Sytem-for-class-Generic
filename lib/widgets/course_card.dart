@@ -584,13 +584,24 @@ class CourseCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  const Color(
+                                    0xFF6366F1,
+                                  ).withValues(alpha: 0.1),
+                                  const Color(
+                                    0xFF8B5CF6,
+                                  ).withValues(alpha: 0.05),
+                                ],
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Icon(
-                              Icons.person_rounded,
+                            child: const Icon(
+                              Icons.person_outline_rounded,
                               size: 16,
-                              color: Colors.grey.shade600,
+                              color: Color(0xFF6366F1),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -633,13 +644,20 @@ class CourseCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.green.shade100.withValues(alpha: 0.5),
+                                  Colors.green.shade50.withValues(alpha: 0.3),
+                                ],
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
-                              Icons.group_rounded,
+                              Icons.groups_outlined,
                               size: 16,
-                              color: Colors.grey.shade600,
+                              color: Colors.green.shade700,
                             ),
                           ),
                           const SizedBox(width: 10),

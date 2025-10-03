@@ -36,6 +36,23 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
           'Attendance Tab - Courses count: ${courseProvider.courses.length}',
         );
 
+        // Validate and reset selected course key if it's no longer valid
+        if (_selectedCourseKey != null) {
+          final selectedCourse = courseProvider.getCourseByKey(
+            _selectedCourseKey!,
+          );
+          if (selectedCourse == null) {
+            // The selected course was deleted, reset the selection
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _selectedCourseKey = null;
+                });
+              }
+            });
+          }
+        }
+
         return Column(
           children: [
             Expanded(
@@ -142,7 +159,14 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                             else
                               // Course dropdown
                               DropdownButtonFormField<int>(
-                                value: _selectedCourseKey,
+                                value:
+                                    _selectedCourseKey != null &&
+                                            courseProvider.getCourseByKey(
+                                                  _selectedCourseKey!,
+                                                ) !=
+                                                null
+                                        ? _selectedCourseKey
+                                        : null,
                                 isExpanded: true,
                                 decoration: InputDecoration(
                                   hintText: 'Choose a course to get started',

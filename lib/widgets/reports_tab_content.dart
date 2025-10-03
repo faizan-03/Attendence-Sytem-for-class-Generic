@@ -37,6 +37,23 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
         // Debug: Check if courses are loaded
         print('Reports Tab - Courses count: ${courseProvider.courses.length}');
 
+        // Validate and reset selected course key if it's no longer valid
+        if (_selectedCourseKey != null) {
+          final selectedCourse = courseProvider.getCourseByKey(
+            _selectedCourseKey!,
+          );
+          if (selectedCourse == null) {
+            // The selected course was deleted, reset the selection
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _selectedCourseKey = null;
+                });
+              }
+            });
+          }
+        }
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -179,7 +196,14 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
             SizedBox(
               width: double.infinity,
               child: DropdownButtonFormField<int>(
-                value: _selectedCourseKey,
+                value:
+                    _selectedCourseKey != null &&
+                            courseProvider.getCourseByKey(
+                                  _selectedCourseKey!,
+                                ) !=
+                                null
+                        ? _selectedCourseKey
+                        : null,
                 isExpanded: true,
                 decoration: InputDecoration(
                   hintText: 'Choose a course',
