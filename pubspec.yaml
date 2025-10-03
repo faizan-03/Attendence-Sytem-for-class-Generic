@@ -63,6 +63,11 @@ dependencies:
   shared_preferences: ^2.2.2
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "lib/assets/LOGO.png"
   flutter_test:
     sdk: flutter
 
