@@ -112,7 +112,7 @@ class PdfService {
                 pw.SizedBox(height: 30),
 
                 // Student Attendance Table
-                pw.Table.fromTextArray(
+                pw.TableHelper.fromTextArray(
                   context: context,
                   data: [
                     // Table headers
@@ -131,7 +131,7 @@ class PdfService {
                         student.name,
                         isPresent ? 'Present' : 'Absent',
                       ];
-                    }).toList(),
+                    }),
                   ],
                   border: pw.TableBorder.all(color: PdfColors.black, width: 1),
                   headerStyle: pw.TextStyle(

@@ -34,8 +34,13 @@ class _ReportsTabContentState extends State<ReportsTabContent> {
         attendanceProvider,
         child,
       ) {
-        // Debug: Check if courses are loaded
-        print('Reports Tab - Courses count: ${courseProvider.courses.length}');
+        // Debug: Check if courses are loaded (debug mode only)
+        assert(() {
+          debugPrint(
+            'Reports Tab - Courses count: ${courseProvider.courses.length}',
+          );
+          return true;
+        }());
 
         // Validate and reset selected course key if it's no longer valid
         if (_selectedCourseKey != null) {

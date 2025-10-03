@@ -8,7 +8,7 @@ import '../../models/student.dart';
 class AddStudentScreen extends StatefulWidget {
   static const String routeName = '/add-student';
 
-  const AddStudentScreen({Key? key}) : super(key: key);
+  const AddStudentScreen({super.key});
 
   @override
   State<AddStudentScreen> createState() => _AddStudentScreenState();

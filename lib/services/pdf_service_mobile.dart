@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -18,7 +19,11 @@ class PlatformPdfService {
         XFile(file.path, mimeType: 'application/pdf'),
       ], text: 'Attendance Report');
     } catch (e) {
-      print('Error saving PDF: $e');
+      // Log error in debug mode only
+      assert(() {
+        debugPrint('Error saving PDF: $e');
+        return true;
+      }());
       rethrow;
     }
   }

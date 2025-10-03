@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutTabContent extends StatelessWidget {
-  const AboutTabContent({Key? key}) : super(key: key);
+  const AboutTabContent({super.key});
 
   Future<void> _launchUrl(String url) async {
     final Uri uri = Uri.parse(url);

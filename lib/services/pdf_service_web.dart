@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:html' as html;
+import 'package:flutter/foundation.dart';
 
 class PlatformPdfService {
   static Future<void> savePdf(Uint8List pdfBytes, String fileName) async {
@@ -17,7 +18,11 @@ class PlatformPdfService {
       // Clean up the URL
       html.Url.revokeObjectUrl(url);
     } catch (e) {
-      print('Error saving PDF: $e');
+      // Log error in debug mode only
+      assert(() {
+        debugPrint('Error saving PDF: $e');
+        return true;
+      }());
       rethrow;
     }
   }

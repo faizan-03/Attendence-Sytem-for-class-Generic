@@ -17,7 +17,11 @@ class CourseProvider extends ChangeNotifier {
     try {
       loadCourses();
     } catch (e) {
-      print('Error during initial load, clearing database: $e');
+      // Log error in debug mode only
+      assert(() {
+        debugPrint('Error during initial load, clearing database: $e');
+        return true;
+      }());
       await clearAllCourses();
       loadCourses();
     }
@@ -29,7 +33,11 @@ class CourseProvider extends ChangeNotifier {
         _courses = _courseBox!.values.toList();
         notifyListeners();
       } catch (e) {
-        print('Error loading courses: $e');
+        // Log error in debug mode only
+        assert(() {
+          debugPrint('Error loading courses: $e');
+          return true;
+        }());
         // If there's an error loading courses, try to recover
         _courses = [];
         _recoverCourses();
@@ -43,9 +51,15 @@ class CourseProvider extends ChangeNotifier {
       // Try to recover courses by clearing corrupted data
       try {
         await _courseBox!.clear();
-        print('Cleared corrupted course data');
+        assert(() {
+          debugPrint('Cleared corrupted course data');
+          return true;
+        }());
       } catch (e) {
-        print('Error clearing course data: $e');
+        assert(() {
+          debugPrint('Error clearing course data: $e');
+          return true;
+        }());
       }
     }
   }
@@ -56,7 +70,10 @@ class CourseProvider extends ChangeNotifier {
       await _courseBox!.clear();
       _courses = [];
       notifyListeners();
-      print('All courses cleared');
+      assert(() {
+        debugPrint('All courses cleared');
+        return true;
+      }());
     }
   }
 

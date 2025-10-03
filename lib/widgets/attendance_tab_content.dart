@@ -8,10 +8,10 @@ import '../providers/attendance_provider.dart';
 import '../screens/attendence/edit_attendance_screen.dart';
 
 class AttendanceTabContent extends StatefulWidget {
-  const AttendanceTabContent({Key? key}) : super(key: key);
+  const AttendanceTabContent({super.key});
 
   @override
-  _AttendanceTabContentState createState() => _AttendanceTabContentState();
+  State<AttendanceTabContent> createState() => _AttendanceTabContentState();
 }
 
 class _AttendanceTabContentState extends State<AttendanceTabContent> {
@@ -31,10 +31,13 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
   Widget build(BuildContext context) {
     return Consumer2<CourseProvider, AttendanceProvider>(
       builder: (context, courseProvider, attendanceProvider, child) {
-        // Debug: Check if courses are loaded
-        print(
-          'Attendance Tab - Courses count: ${courseProvider.courses.length}',
-        );
+        // Debug: Check if courses are loaded (debug mode only)
+        assert(() {
+          debugPrint(
+            'Attendance Tab - Courses count: ${courseProvider.courses.length}',
+          );
+          return true;
+        }());
 
         // Validate and reset selected course key if it's no longer valid
         if (_selectedCourseKey != null) {
@@ -383,7 +386,7 @@ class _AttendanceTabContentState extends State<AttendanceTabContent> {
                                                       Navigator.pop(context);
                                                     },
                                                   );
-                                                }).toList(),
+                                                }),
                                               ],
                                             ),
                                           ),

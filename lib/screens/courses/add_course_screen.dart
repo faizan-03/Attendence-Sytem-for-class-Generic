@@ -6,7 +6,7 @@ import '../../models/course.dart';
 class AddCourseScreen extends StatefulWidget {
   static const String routeName = '/add-course';
 
-  const AddCourseScreen({Key? key}) : super(key: key);
+  const AddCourseScreen({super.key});
 
   @override
   State<AddCourseScreen> createState() => _AddCourseScreenState();
@@ -228,7 +228,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -268,7 +268,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -308,7 +308,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -348,7 +348,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -391,7 +391,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.05),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -431,7 +431,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.05),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -478,7 +478,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF6366F1).withOpacity(0.3),
+                            color: const Color(
+                              0xFF6366F1,
+                            ).withValues(alpha: 0.3),
                             spreadRadius: 1,
                             blurRadius: 10,
                             offset: const Offset(0, 6),

@@ -7,11 +7,11 @@ class AttendanceCheckbox extends StatelessWidget {
   final ValueChanged<bool?> onChanged;
 
   const AttendanceCheckbox({
-    Key? key,
+    super.key,
     required this.student,
     required this.isPresent,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
