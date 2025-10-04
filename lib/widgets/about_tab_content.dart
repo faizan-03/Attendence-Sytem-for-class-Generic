@@ -106,22 +106,51 @@ class AboutTabContent extends StatelessWidget {
               children: [
                 // Developer Avatar
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                    borderRadius: BorderRadius.circular(40),
+                    border: Border.all(
+                      color: const Color(0xFF6366F1),
+                      width: 3,
                     ),
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'RFA',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(37),
+                    child: Image.asset(
+                      'lib/assets/faizan.jpeg',
+                      width: 74,
+                      height: 74,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback to RFA text if image fails to load
+                        return Container(
+                          width: 74,
+                          height: 74,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                            ),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'RFA',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
